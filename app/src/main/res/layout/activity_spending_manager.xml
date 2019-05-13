@@ -15,14 +15,14 @@
     </TextView>
 
     <ListView
-        android:id="@+id/list_view_spendings"
+        android:id="@+id/list_view_purchases"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/textview_title">
     </ListView>
 
     <Button
-        android:id="@+id/button_new_spent"
+        android:id="@+id/button_new_purchase"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_alignParentRight="true"

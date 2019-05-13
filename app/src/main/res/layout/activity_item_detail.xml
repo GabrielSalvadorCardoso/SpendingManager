@@ -1,0 +1,48 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textview_purchase"
+            android:textAlignment="center"
+            android:textSize="20sp">
+        </TextView>
+
+        <EditText
+            android:id="@+id/edit_text_item_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nome do item"/>
+
+        <EditText
+            android:id="@+id/edit_text_item_quantity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Quantidade"/>
+
+        <EditText
+            android:id="@+id/edit_text_item_unitary_val"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Preço unitário"/>
+
+        <Button
+            android:id="@+id/button_save_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Criar Item"
+            android:layout_below="@+id/edit_text_item_unitary_val"
+            android:layout_gravity="center"/>
+
+    </LinearLayout>
+
+</ScrollView>

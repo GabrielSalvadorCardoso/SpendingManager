@@ -11,45 +11,45 @@ import android.widget.ListView;
 
 import java.util.List;
 
-import br.edu.unicarioca.spendingmanager.dao.SpentDAO;
-import br.edu.unicarioca.spendingmanager.models.Spent;
+import br.edu.unicarioca.spendingmanager.dao.PurchaseDAO;
+import br.edu.unicarioca.spendingmanager.models.Purchase;
 
 public class SpendingManagerActivity extends AppCompatActivity {
-    private ListView spendingsList;
+    private ListView purchaseList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spending_manager);
 
-        spendingsList = (ListView) findViewById(R.id.list_view_spendings);
+        purchaseList = (ListView) findViewById(R.id.list_view_purchases);
 
         /*
         ListView implements AdapterView. AdapterView has the setOnItemClickListener()
         method. This method sets a Listener to the AdapterView to handle all click event
         to each item in this AdapterView
         */
-        spendingsList.setOnItemClickListener( new AdapterView.OnItemClickListener() {
+        purchaseList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             // Documentation of this method https://developer.android.com/reference/android/widget/AdapterView.OnItemClickListener
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Spent spent = (Spent) spendingsList.getItemAtPosition(position);
-                Intent intent = new Intent(SpendingManagerActivity.this, SpentDetailActivity.class);
-                intent.putExtra("spent", spent);
+                Purchase purchase = (Purchase) purchaseList.getItemAtPosition(position);
+                Intent intent = new Intent(SpendingManagerActivity.this, PurchaseDetailActivity.class);
+                intent.putExtra("purchase", purchase);
                 startActivity(intent);
             }
 
         } );
 
-        Button newSpentButton = (Button) findViewById(R.id.button_new_spent);
+        Button newPurchaseButton = (Button) findViewById(R.id.button_new_purchase);
 
-        newSpentButton.setOnClickListener( new View.OnClickListener() {
+            newPurchaseButton.setOnClickListener( new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SpendingManagerActivity.this, SpentDetailActivity.class);
-                startActivity(intent);
+            Intent intent = new Intent(SpendingManagerActivity.this, PurchaseDetailActivity.class);
+            startActivity(intent);
             }
         } );
     }
@@ -57,16 +57,16 @@ public class SpendingManagerActivity extends AppCompatActivity {
     @Override
     protected void onResume(){
         super.onResume();
-        loadSpendings();
+        loadPurchases();
     }
 
-    private void loadSpendings() {
-        SpentDAO dao = new SpentDAO(this);
-        //SpentDAO dao = new SpentDAO(this);
-        List<Spent> spendings = dao.list();
+    private void loadPurchases() {
+        PurchaseDAO dao = new PurchaseDAO(this);
+        //PurchaseDAO dao = new PurchaseDAO(this);
+        List<Purchase> purchases = dao.list();
         dao.close();
 
-        ArrayAdapter<Spent> adapter = new ArrayAdapter<Spent>(this, android.R.layout.simple_list_item_1, spendings);
-        spendingsList.setAdapter(adapter);
+        ArrayAdapter<Purchase> adapter = new ArrayAdapter<Purchase>(this, android.R.layout.simple_list_item_1, purchases);
+        purchaseList.setAdapter(adapter);
     }
 }
