@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.net.wifi.aware.PublishConfig;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -20,7 +19,8 @@ import br.edu.unicarioca.spendingmanager.models.Item;
 import br.edu.unicarioca.spendingmanager.models.Purchase;
 
 public class PurchaseDAO extends SQLiteOpenHelper {
-    public static final String DATE_PATTERN = "dd/MM/yyyy";
+    public static final String PT_BR_DATE_PATTERN = "dd/MM/yyyy";
+    public static final String DEFAULT_DATE_PATTERN = "yyyy/MM/dd";
     private static final String ID_PURCHASE_FIELD_NAME = "id_purchase";
     private static final String DATE_PURCHASE_FIELD_NAME = "date";
     private static final String LOCATION_PURCHASE_FIELD_NAME = "location";
@@ -39,9 +39,12 @@ public class PurchaseDAO extends SQLiteOpenHelper {
                                                             UNITARY_VAL_ITEM_FIELD_NAME +
                                                             " FROM Purchase as p LEFT JOIN Item as i on p.id_purchase = i.purchase";
     private static final String PURCHASE_LIST_QUERY = "SELECT * FROM Purchase";
+    private static final String PURCHASE_BETWEEN_DATES_QUERY = "SELECT * FROM Purchase WHERE date BETWEEN ? AND ?";
+    private static final String PURCHASE_BETWEEN_DATES_AND_LOCATION_QUERY = "SELECT * FROM Purchase WHERE location LIKE ? AND date BETWEEN ? AND ?";
+    private static final String PURCHASE_BY_LOCATION_QUERY = "SELECT * FROM Purchase WHERE location LIKE ?";
     private static final String CREATE_TABLE_PURCHASE = "CREATE TABLE Purchase (" +
                                                         ID_PURCHASE_FIELD_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                                                        DATE_PURCHASE_FIELD_NAME + " TEXT," +
+                                                        DATE_PURCHASE_FIELD_NAME + " DATE," +
                                                         LOCATION_PURCHASE_FIELD_NAME + " TEXT)";
     private static final String CREATE_TABLE_ITEM = "CREATE TABLE Item (" +
                                                     ID_ITEM_FIELD_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -61,7 +64,7 @@ public class PurchaseDAO extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(PURCHASE_LIST_QUERY, null);
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_PATTERN);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DEFAULT_DATE_PATTERN);
         while(cursor.moveToNext()) {
             String dateString = cursor.getString(cursor.getColumnIndex(DATE_PURCHASE_FIELD_NAME));
             Date date;
@@ -83,6 +86,87 @@ public class PurchaseDAO extends SQLiteOpenHelper {
         return purchases;
     }
 
+    public List<Purchase> listByLocal(String local) {
+        List<Purchase> purchases = new ArrayList<Purchase>();
+        SQLiteDatabase db = getReadableDatabase();
+        String[] params = {"%" + local + "%"};
+        Cursor cursor = db.rawQuery(PURCHASE_BY_LOCATION_QUERY, params);
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DEFAULT_DATE_PATTERN);
+        while(cursor.moveToNext()) {
+            String dateString = cursor.getString(cursor.getColumnIndex(DATE_PURCHASE_FIELD_NAME));
+            Date date;
+            try {
+                date = simpleDateFormat.parse(dateString);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+
+            Purchase purchase = new Purchase(
+                    cursor.getLong(cursor.getColumnIndex(ID_PURCHASE_FIELD_NAME)),
+                    date,
+                    cursor.getString(cursor.getColumnIndex(LOCATION_PURCHASE_FIELD_NAME))
+            );
+            purchases.add(purchase);
+        }
+
+        return purchases;
+    }
+
+    public List<Purchase> listByDateRange(String initDate, String finDate) {
+        List<Purchase> purchases = new ArrayList<Purchase>();
+        SQLiteDatabase db = getReadableDatabase();
+        String[] params = {initDate, finDate};
+        Cursor cursor = db.rawQuery(PURCHASE_BETWEEN_DATES_QUERY, params);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DEFAULT_DATE_PATTERN);
+
+        while(cursor.moveToNext()) {
+            String dateString = cursor.getString(cursor.getColumnIndex(DATE_PURCHASE_FIELD_NAME));
+            Date date;
+            try {
+                date = simpleDateFormat.parse(dateString);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+
+            Purchase purchase = new Purchase(
+                    cursor.getLong(cursor.getColumnIndex(ID_PURCHASE_FIELD_NAME)),
+                    date,
+                    cursor.getString(cursor.getColumnIndex(LOCATION_PURCHASE_FIELD_NAME))
+            );
+            purchases.add(purchase);
+        }
+
+        return purchases;
+    }
+
+    public List<Purchase> listByLocalAndDateRange(String initDate, String finDate, String local) {
+        List<Purchase> purchases = new ArrayList<Purchase>();
+        SQLiteDatabase db = getReadableDatabase();
+        String[] params = {"%" + local + "%", initDate, finDate};
+        Cursor cursor = db.rawQuery(PURCHASE_BETWEEN_DATES_AND_LOCATION_QUERY, params);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DEFAULT_DATE_PATTERN);
+
+        while(cursor.moveToNext()) {
+            String dateString = cursor.getString(cursor.getColumnIndex(DATE_PURCHASE_FIELD_NAME));
+            Date date;
+            try {
+                date = simpleDateFormat.parse(dateString);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+
+            Purchase purchase = new Purchase(
+                    cursor.getLong(cursor.getColumnIndex(ID_PURCHASE_FIELD_NAME)),
+                    date,
+                    cursor.getString(cursor.getColumnIndex(LOCATION_PURCHASE_FIELD_NAME))
+            );
+            purchases.add(purchase);
+        }
+
+        return purchases;
+    }
+
     public Purchase getPurchaseById(Long id) {
         SQLiteDatabase db = getReadableDatabase();
         String purchase_get_query = PURCHASE_ITEM_JOIN_QUERY + " where " + ID_PURCHASE_FIELD_NAME + "=" + id;
@@ -91,7 +175,7 @@ public class PurchaseDAO extends SQLiteOpenHelper {
 
         while(cursor.moveToNext()) {
             if(purchase == null) {
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_PATTERN);
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DEFAULT_DATE_PATTERN);
                 String dateString = cursor.getString(cursor.getColumnIndex(DATE_PURCHASE_FIELD_NAME));
                 Date date;
                 try {
@@ -126,7 +210,7 @@ public class PurchaseDAO extends SQLiteOpenHelper {
     private ContentValues getSpentAsContentValues(Purchase purchase) {
         ContentValues content = new ContentValues();
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_PATTERN);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DEFAULT_DATE_PATTERN);
         String stringDate = simpleDateFormat.format(purchase.getPurchaseDate());
 
         content.put(DATE_PURCHASE_FIELD_NAME, stringDate);

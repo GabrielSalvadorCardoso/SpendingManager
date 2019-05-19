@@ -37,4 +37,17 @@
 
     </Button>
 
+    <Button
+        android:id="@+id/button_search_purchase"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="80dp"
+        android:backgroundTint="@color/colorPrimaryDark"
+        android:background="@mipmap/baseline_search_white_18">
+
+    </Button>
+
 </RelativeLayout>

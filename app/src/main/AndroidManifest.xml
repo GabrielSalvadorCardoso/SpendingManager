@@ -9,6 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".PurchaseListActivity"></activity>
+        <activity android:name=".SearchPurchaseActivity" />
         <activity android:name=".SpendingManagerActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -16,9 +18,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".PurchaseDetailActivity"></activity>
-        <activity android:name=".ItemDetailActivity"></activity>
+        <activity android:name=".PurchaseDetailActivity" />
+        <activity android:name=".ItemDetailActivity" />
     </application>
 
 </manifest>

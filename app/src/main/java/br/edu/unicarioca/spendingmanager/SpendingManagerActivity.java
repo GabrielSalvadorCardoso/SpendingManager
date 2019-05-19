@@ -48,10 +48,21 @@ public class SpendingManagerActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-            Intent intent = new Intent(SpendingManagerActivity.this, PurchaseDetailActivity.class);
-            startActivity(intent);
+                Intent intent = new Intent(SpendingManagerActivity.this, PurchaseDetailActivity.class);
+                startActivity(intent);
             }
         } );
+
+        Button searchPurchaseButton = (Button) findViewById(R.id.button_search_purchase);
+        searchPurchaseButton.setOnClickListener( new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SpendingManagerActivity.this, SearchPurchaseActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     @Override
@@ -62,7 +73,6 @@ public class SpendingManagerActivity extends AppCompatActivity {
 
     private void loadPurchases() {
         PurchaseDAO dao = new PurchaseDAO(this);
-        //PurchaseDAO dao = new PurchaseDAO(this);
         List<Purchase> purchases = dao.list();
         dao.close();
 
